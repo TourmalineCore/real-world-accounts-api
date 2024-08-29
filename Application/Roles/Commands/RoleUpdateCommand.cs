@@ -44,14 +44,16 @@ public class RoleUpdateCommandHandler : ICommandHandler<RoleUpdateCommand>
         var roles = await _rolesRepository.GetAllAsync();
         var roleNames = roles.Select(x => x.Name);
 
-        if (currentName == newName)
+        if(currentName == newName)
         {
             return;
         }
 
-        if (roleNames.Contains(newName))
+        if(roleNames.Contains(newName))
         {
             throw new ArgumentException($"Role with name [{newName}] already exists");
         }
+
+        return;
     }
 }

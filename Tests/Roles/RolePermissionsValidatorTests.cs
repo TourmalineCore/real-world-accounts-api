@@ -18,9 +18,6 @@ public class RolePermissionsValidatorTests
     {
         var permissionsWithoutDependencies = new List<string>
         {
-            Permissions.ViewPersonalProfile,
-            Permissions.ViewContacts,
-            Permissions.AccessAnalyticalForecastsPage,
             Permissions.ViewAccounts,
             Permissions.ViewRoles,
         };
@@ -34,18 +31,10 @@ public class RolePermissionsValidatorTests
     {
         var allPermissions = new List<string>
         {
-            Permissions.ViewPersonalProfile,
-            Permissions.ViewContacts,
-            Permissions.ViewSalaryAndDocumentsData,
-            Permissions.EditFullEmployeesData,
-            Permissions.AccessAnalyticalForecastsPage,
             Permissions.ViewAccounts,
             Permissions.ManageAccounts,
             Permissions.ViewRoles,
             Permissions.ManageRoles,
-            Permissions.CanRequestCompensations,
-            Permissions.CanManageCompensations,
-            Permissions.CanManageDocuments,
         };
 
         var exception = Record.Exception(() => RolePermissionsValidator.ValidatePermissions(allPermissions));
@@ -53,8 +42,6 @@ public class RolePermissionsValidatorTests
     }
 
     [Theory]
-    [InlineData(Permissions.ViewSalaryAndDocumentsData, new[] { Permissions.ViewContacts })]
-    [InlineData(Permissions.EditFullEmployeesData, new[] { Permissions.ViewContacts, Permissions.ViewSalaryAndDocumentsData })]
     [InlineData(Permissions.ManageAccounts, new[] { Permissions.ViewAccounts })]
     [InlineData(Permissions.ManageRoles, new[] { Permissions.ViewRoles })]
     public void ValidatePermissionsWithDependencies_DependenciesAreIncorrect_GetValidationErrors(string permission, string[] expectedPermissionDependencies)
@@ -64,8 +51,6 @@ public class RolePermissionsValidatorTests
     }
 
     [Theory]
-    [InlineData(Permissions.ViewSalaryAndDocumentsData, Permissions.ViewContacts)]
-    [InlineData(Permissions.EditFullEmployeesData, Permissions.ViewContacts, Permissions.ViewSalaryAndDocumentsData)]
     [InlineData(Permissions.ManageAccounts, Permissions.ViewAccounts)]
     [InlineData(Permissions.ManageRoles, Permissions.ViewRoles)]
     public void ValidatePermissionsWithDependencies_DependenciesAreCorrect_NoValidationErrors(params string[] permissions)

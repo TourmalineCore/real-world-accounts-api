@@ -73,7 +73,7 @@
 //        };
 
 //        _accountRepositoryMock
-//            .Setup(x => x.FindByCorporateEmailAsync(It.IsAny<string>()))
+//            .Setup(x => x.FindByLoginAsync(It.IsAny<string>()))
 //            .ReturnsAsync(new Account("ivan@tourmalinecore.com",
 //                        "Ivan",
 //                        "Smith",

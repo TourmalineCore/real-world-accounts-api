@@ -15,7 +15,7 @@ public class AccountBlockCommandHandlerTests
 
     private readonly List<Role> _roles = new()
     {
-        new Role(BaseRoleNames.Ceo, TestData.ValidPermissions),
+        new Role(BaseRoleNames.Admin, TestData.ValidPermissions),
     };
 
     public AccountBlockCommandHandlerTests()

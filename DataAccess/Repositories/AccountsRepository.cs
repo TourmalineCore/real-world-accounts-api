@@ -30,13 +30,13 @@ public class AccountsRepository : IAccountsRepository
         return account.Id;
     }
 
-    public Task<Account?> FindByCorporateEmailAsync(string corporateEmail)
+    public Task<Account?> FindByLoginAsync(string login)
     {
         return _context
             .Queryable<Account>()
             .Include(x => x.AccountRoles)
             .ThenInclude(x => x.Role)
-            .SingleOrDefaultAsync(x => x.Login == corporateEmail && x.DeletedAtUtc == null);
+            .SingleOrDefaultAsync(x => x.Login == login && x.DeletedAtUtc == null);
     }
 
     public Task<Account?> FindByIdAsync(long id)

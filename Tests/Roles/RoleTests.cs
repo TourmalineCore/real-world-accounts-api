@@ -11,7 +11,7 @@ public class RoleTests
     [Fact]
     public void CannotSetAdminRole()
     {
-        var role = new Role(BaseRoleNames.Ceo, TestData.ValidPermissions);
+        var role = new Role(BaseRoleNames.Guest, TestData.ValidPermissions);
         var exception = Assert.Throws<RoleOperationException>(() => role.Update(BaseRoleNames.Admin, TestData.ValidPermissions));
         Assert.Equal("Can't set admin role", exception.Message);
     }
@@ -21,11 +21,11 @@ public class RoleTests
     {
         var incorrectPermissions = new List<Permission>
         {
-            new(Permissions.EditFullEmployeesData),
+            new(Permissions.ManageAccounts),
         };
 
-        var role = new Role(BaseRoleNames.Ceo, TestData.ValidPermissions);
-        Assert.Throws<ArgumentException>(() => role.Update(BaseRoleNames.Ceo, incorrectPermissions));
+        var role = new Role(BaseRoleNames.Guest, TestData.ValidPermissions);
+        Assert.Throws<ArgumentException>(() => role.Update(BaseRoleNames.Guest, incorrectPermissions));
     }
 
     [Fact]
@@ -33,11 +33,11 @@ public class RoleTests
     {
         var incorrectPermissions = new List<Permission>
         {
-            new(Permissions.EditFullEmployeesData),
+            new(Permissions.ManageAccounts),
         };
 
-        Assert.Throws<ArgumentException>(() => new Role(BaseRoleNames.Ceo, incorrectPermissions));
-        Assert.Throws<ArgumentException>(() => new Role(It.IsAny<long>(), BaseRoleNames.Ceo, incorrectPermissions));
+        Assert.Throws<ArgumentException>(() => new Role(BaseRoleNames.Guest, incorrectPermissions));
+        Assert.Throws<ArgumentException>(() => new Role(It.IsAny<long>(), BaseRoleNames.Guest, incorrectPermissions));
     }
 
     [Fact]
@@ -45,13 +45,11 @@ public class RoleTests
     {
         var incorrectPermissions = new List<Permission>
         {
-            new(Permissions.ViewContacts),
-            new(Permissions.ViewSalaryAndDocumentsData),
-            new(Permissions.EditFullEmployeesData),
+            new(Permissions.ViewAccounts),
         };
 
-        Assert.Null(Record.Exception(() => new Role(BaseRoleNames.Ceo, incorrectPermissions)));
-        Assert.Null(Record.Exception(() => new Role(It.IsAny<long>(), BaseRoleNames.Ceo, incorrectPermissions)));
+        Assert.Null(Record.Exception(() => new Role(BaseRoleNames.Admin, incorrectPermissions)));
+        Assert.Null(Record.Exception(() => new Role(It.IsAny<long>(), BaseRoleNames.Admin, incorrectPermissions)));
     }
 
     [Fact]
@@ -60,7 +58,7 @@ public class RoleTests
         Assert.Throws<ArgumentException>(() => new Role(string.Empty,
                     new List<Permission>
                     {
-                        new(Permissions.ViewPersonalProfile),
+                        new(Permissions.ViewAccounts),
                     }
                 )
             );
@@ -68,7 +66,7 @@ public class RoleTests
         Assert.Throws<ArgumentException>(() => new Role("  ",
                     new List<Permission>
                     {
-                        new(Permissions.ViewPersonalProfile),
+                        new(Permissions.ViewAccounts),
                     }
                 )
             );
@@ -80,10 +78,10 @@ public class RoleTests
     [Fact]
     public void CannotUpdateRoleIfNewNameIsEmptyOrWhitespaces()
     {
-        var role = new Role(BaseRoleNames.Ceo,
+        var role = new Role(BaseRoleNames.Guest,
                 new List<Permission>
                 {
-                    new(Permissions.ViewPersonalProfile),
+                    new(Permissions.GuestActionsAllowed),
                 }
             );
 
@@ -94,19 +92,19 @@ public class RoleTests
     [Fact]
     public void CannotCreateRoleIfEmptyPermissions()
     {
-        Assert.Throws<ArgumentException>(() => new Role(BaseRoleNames.Ceo, new List<Permission>()));
+        Assert.Throws<ArgumentException>(() => new Role(BaseRoleNames.Admin, new List<Permission>()));
     }
 
     [Fact]
     public void CannotUpdateRoleIfNewPermissionsAreEmpty()
     {
-        var role = new Role(BaseRoleNames.Ceo,
+        var role = new Role(BaseRoleNames.Guest,
                 new List<Permission>
                 {
-                    new(Permissions.ViewContacts),
+                    new(Permissions.GuestActionsAllowed),
                 }
             );
 
-        Assert.Throws<ArgumentException>(() => role.Update(BaseRoleNames.Ceo, new List<Permission>()));
+        Assert.Throws<ArgumentException>(() => role.Update(BaseRoleNames.Guest, new List<Permission>()));
     }
 }

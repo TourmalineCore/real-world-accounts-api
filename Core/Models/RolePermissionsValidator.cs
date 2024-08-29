@@ -8,8 +8,6 @@ public static class RolePermissionsValidator
 {
     private static readonly Dictionary<string, string[]> PermissionsWithDependencies = new()
     {
-        { Permissions.ViewSalaryAndDocumentsData, new[] { Permissions.ViewContacts } },
-        { Permissions.EditFullEmployeesData, new[] { Permissions.ViewContacts, Permissions.ViewSalaryAndDocumentsData } },
         { Permissions.ManageAccounts, new[] { Permissions.ViewAccounts } },
         { Permissions.ManageRoles, new[] { Permissions.ViewRoles } },
     };
