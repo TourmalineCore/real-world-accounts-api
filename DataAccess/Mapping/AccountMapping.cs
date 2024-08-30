@@ -11,7 +11,7 @@ internal class AccountMapping : IEntityTypeConfiguration<Account>
     {
         builder.HasIndex(user => user.Login)
             .IsUnique();
-        
+
         builder.Property(x => x.TenantId).HasDefaultValue(1L);
 
         builder.HasData(

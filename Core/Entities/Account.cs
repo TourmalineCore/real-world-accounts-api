@@ -38,10 +38,10 @@ public class Account : IEntity
 
         AccountRoles = roles
             .Select(role => new AccountRole
-                    {
-                        RoleId = role.Id,
-                        Role = role,
-                    }
+            {
+                RoleId = role.Id,
+                Role = role,
+            }
                 )
             .ToList();
     }
@@ -63,10 +63,10 @@ public class Account : IEntity
 
         AccountRoles = roles
             .Select(role => new AccountRole
-                    {
-                        RoleId = role.Id,
-                        Role = role,
-                    }
+            {
+                RoleId = role.Id,
+                Role = role,
+            }
                 )
             .ToList();
     }

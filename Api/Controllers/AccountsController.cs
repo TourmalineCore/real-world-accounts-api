@@ -42,9 +42,9 @@ public class AccountsController : Controller
         try
         {
             var accounts = await _getAccountsQueryHandler.HandleAsync(new GetAccountsQuery
-                    {
-                        CallerCorporateEmail = User.GetCorporateEmail(),
-                    }
+            {
+                CallerCorporateEmail = User.GetCorporateEmail(),
+            }
                 );
 
             return Ok(accounts);
@@ -62,10 +62,10 @@ public class AccountsController : Controller
         try
         {
             var account = await _getAccountByIdQueryHandler.HandleAsync(new GetAccountByIdQuery
-                    {
-                        Id = accountId,
-                        CallerCorporateEmail = User.GetCorporateEmail(),
-                    }
+            {
+                Id = accountId,
+                CallerCorporateEmail = User.GetCorporateEmail(),
+            }
                 );
 
             return Ok(account);
@@ -116,10 +116,10 @@ public class AccountsController : Controller
         try
         {
             await _accountBlockCommandHandler.HandleAsync(new AccountBlockCommand
-                    {
-                        Id = accountId,
-                        CallerCorporateEmail = User.GetCorporateEmail(),
-                    }
+            {
+                Id = accountId,
+                CallerCorporateEmail = User.GetCorporateEmail(),
+            }
                 );
 
             return Ok();
@@ -137,10 +137,10 @@ public class AccountsController : Controller
         try
         {
             await _accountUnblockCommandHandler.HandleAsync(new AccountUnblockCommand
-                    {
-                        Id = accountId,
-                        CallerCorporateEmail = User.GetCorporateEmail(),
-                    }
+            {
+                Id = accountId,
+                CallerCorporateEmail = User.GetCorporateEmail(),
+            }
                 );
 
             return Ok();
@@ -160,7 +160,7 @@ public class AccountsController : Controller
     {
         var authorizationHeader = context.Request.Headers["Authorization"].FirstOrDefault();
 
-        if(authorizationHeader != null && authorizationHeader.StartsWith("Bearer "))
+        if (authorizationHeader != null && authorizationHeader.StartsWith("Bearer "))
         {
             var token = authorizationHeader.Substring("Bearer ".Length).Trim();
 
