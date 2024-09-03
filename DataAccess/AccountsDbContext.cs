@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DataAccess;
 
 //Use next command in Package Manager Console to update Dev env DB
-//PM> $env:ASPNETCORE_ENVIRONMENT = 'Debug'; Update-Database
+//PM> $env:ASPNETCORE_ENVIRONMENT = 'LocalEnvForDevelopment'; Update-Database
 public class AccountsDbContext : DbContext
 {
     public DbSet<Account> Accounts { get; set; }

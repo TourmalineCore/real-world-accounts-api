@@ -1,12 +1,16 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Api;
+using Api.Options;
 using Application;
 using Application.HttpClients;
 using Application.Options;
 using DataAccess;
+using LoggingLibrary;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.EventLog;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using TourmalineCore.AspNetCore.JwtAuthentication.Core;
 using TourmalineCore.AspNetCore.JwtAuthentication.Core.Options;
 
@@ -14,8 +18,43 @@ const string debugEnvironmentName = "Debug";
 const string loggingSectionKey = "Logging";
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+
+// configure ElasticSearch credentials
+builder.Services.Configure<ElasticSearchOptions>(configuration.GetSection("ElasticSearchOptions"));
+var elasticSearchOptions = configuration
+    .GetSection(nameof(ElasticSearchOptions))
+    .Get<ElasticSearchOptions>();
+
+// add logging
+builder.Services.AddScoped(_ => new LoggingAttribute("Accounts"));
+ElkLogger.SetupLogger(
+    elasticSearchOptions.ElasticSearchUrl,
+    elasticSearchOptions.ElasticSearchLogin,
+    elasticSearchOptions.ElasticSearchPassword);
 
 builder.Services.AddControllers();
+
+// add tracing
+builder.Services.AddOpenTelemetry()
+    .WithTracing(builder =>
+    {
+        builder
+            .AddSource("Logs.Startup")
+            .SetSampler(new AlwaysOnSampler())
+            .SetResourceBuilder(
+                ResourceBuilder
+                    .CreateDefault()
+                    .AddService("OpenTelemetry.RampUp.Accounts.*", serviceVersion: "0.0.1"))
+            .AddAspNetCoreInstrumentation()
+            .AddJaegerExporter(o =>
+            {
+                o.AgentHost = Environment.GetEnvironmentVariable("JAEGER_HOST") ?? "localhost";
+                o.AgentPort = int.TryParse(Environment.GetEnvironmentVariable("JAEGER_PORT"), out var port) ? port : 6831;
+            })
+
+            .AddConsoleExporter();
+    });
 builder.Services.AddCors();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -40,8 +79,6 @@ builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
             config.AddCommandLine(args);
         }
     );
-
-var configuration = builder.Configuration;
 
 var authenticationOptions = configuration.GetSection(nameof(AuthenticationOptions)).Get<AuthenticationOptions>();
 builder.Services.AddJwtAuthentication(authenticationOptions).WithUserClaimsProvider<UserClaimsProvider>(UserClaimsProvider.PermissionClaimType);
@@ -96,11 +133,8 @@ if (builder.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-if (app.Environment.IsEnvironment(debugEnvironmentName))
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 using (var serviceScope = app.Services.CreateScope())
 {

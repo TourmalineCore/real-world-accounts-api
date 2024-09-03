@@ -1,20 +1,14 @@
 {
   "profiles": {
-    "Debug": {
+    "LocalEnvForDevelopment": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5006",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Debug"
+        "ASPNETCORE_ENVIRONMENT": "LocalEnvForDevelopment"
       }
-    },
-    "Docker (1)": {
-      "commandName": "Docker",
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-      "publishAllPorts": true
     }
-  },
-  "$schema": "https://json.schemastore.org/launchsettings.json"
+  }
 }

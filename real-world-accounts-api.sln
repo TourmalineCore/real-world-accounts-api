@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{43EAEF02-9DC6-485A-ADA9-A87EC582A4AC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingLibrary", "LoggingLibrary\LoggingLibrary.csproj", "{5F5BBE21-43A0-4C80-AF16-D9B7A23344AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TracingLibrary", "TracingLibrary\TracingLibrary.csproj", "{1D3F8F43-3F8B-4E52-85E6-B38BE3CD2776}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{43EAEF02-9DC6-485A-ADA9-A87EC582A4AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43EAEF02-9DC6-485A-ADA9-A87EC582A4AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43EAEF02-9DC6-485A-ADA9-A87EC582A4AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F5BBE21-43A0-4C80-AF16-D9B7A23344AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F5BBE21-43A0-4C80-AF16-D9B7A23344AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F5BBE21-43A0-4C80-AF16-D9B7A23344AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F5BBE21-43A0-4C80-AF16-D9B7A23344AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D3F8F43-3F8B-4E52-85E6-B38BE3CD2776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D3F8F43-3F8B-4E52-85E6-B38BE3CD2776}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D3F8F43-3F8B-4E52-85E6-B38BE3CD2776}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D3F8F43-3F8B-4E52-85E6-B38BE3CD2776}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
