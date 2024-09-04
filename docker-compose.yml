@@ -1,39 +1,122 @@
-version: "3.8"
-
 services:
-  accounts-db-debug:
+  accounts-db:
     image: postgres:14.2-alpine
     restart: always
-    container_name: 'accounts-db-debug'
+    container_name: accounts-db
+    profiles: ['LocalEnvForDevelopment']
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: Accounts
+      POSTGRES_DB: accounts-db
     ports:
-      - 10001:5432
+      - 5002:5432
     networks:
-      - accounts-deb
+      - accounts-network
 
   accounts-api:
-    container_name: 'accounts-api'
+    container_name: accounts-api
+    profiles: ['LocalEnvForDevelopment']
     depends_on:
-      - 'accounts-db-debug'
+      - accounts-db
     build:
       dockerfile: Dockerfile
       context: .
     ports:
-      - 5015:8080
+      - 10002:8080
     environment:
       - ASPNETCORE_ENVIRONMENT=LocalEnvForDevelopment
       - LOGS_PATH=/var/log/dev-accounts-api
-      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Host=accounts-db-debug;port=5432;Database=Accounts
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Host=accounts-db;port=5432;Database=accounts-db
       - AuthenticationOptions__PublicSigningKey=MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAz+luHwhsNo4aQxYNCkaxcqL/HUcqWG1zz3pCpbyW5nbgxoo+Xw0jwAqVeRlrWHZf0WszbPObyCpmGVifyj6n0PSp5Np7431zjUhRUkxwyNSyVE5BWw5aJLyLB5EF9HH39CqtxdtWmYuLzhBS5fZT4tyR4xlQffNTxylg7xZgLfunUDRuLxdqR0JO3sjebgogrDVvHj3sif46uitipeTfUyCtqBG/JngPkMbDMNRkTH6QXnXfLgpX5Lr21O4PZPIBwCXzPCTCDMgbXHLvAzdlqgVYJcLf9xXPtVkPGOv8y+hbSTAyCNLViOLKKm2a2W4bPiElDIDwbtbHesj8zHPlpP5Q7QMtT168UxetgUeKsr5kfpxtLpE/QO4GkkqTA6rV7PQKrCTY0B5V8ZD8Ir/hlOKk8jxGe9NLui+8rLnnwJUZErT7Swp9yQL1eed2YtdrcR3q5eOE8+2pkzwjbEoFuIQidDKOghrZOwf6j217fme/xE+aEP0OPv5z07kJr2torh7tUefrVerT4Krj5LVl4DgdlkHAuILWOaYdSoLnRrsrfFa9Y1alM2D/juH9+YtaR/YjNWOhdZNMNyoDT08SbgE81ZbKmVgLGaWFLcMn/LBD6DBeRb5dRx12QZnv0jGJLVVgjTe9EqrjVF92ahGRljDIGjNzEI2f2syc0/qKS4sCAwEAAQ==
-      - HttpUrls__AuthServiceUrl=http://auth-service-api:80
+      - HttpUrls__AuthServiceUrl=http://auth-api:8080
     networks:
-      - accounts-deb
-      - ic-backend-deb
+      - accounts-network
+      - realworld-external
+
+  setup:
+    image: elasticsearch:8.12.1
+    environment:
+      - ELASTIC_PASSWORD=123123123
+      - KIBANA_PASSWORD=123123123
+    container_name: setup
+    profiles: ['EnabledLogging']
+    command:
+      - bash
+      - -c
+      - |
+        echo "Waiting for Elasticsearch availability";
+        until curl -s http://elasticsearch:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+        echo "Setting kibana_system password";
+        until curl -s -X POST -u "elastic:123123123" -H "Content-Type: application/json" http://elasticsearch:9200/_security/user/kibana_system/_password -d "{\"password\":\"123123123\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "All done!";
+    networks:
+      - accounts-network
+
+  elasticsearch:
+    image: elasticsearch:8.12.1
+    container_name: elasticsearch
+    profiles: ['EnabledLogging']
+    healthcheck:
+     test:
+       [
+         "CMD-SHELL",
+         "curl -s http://elasticsearch:9200 >/dev/null || exit 1",
+       ]
+     interval: 10s
+     timeout: 10s
+     retries: 120
+    ports:
+      - 9200:9200
+    environment:
+      - discovery.type=single-node
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - ELASTIC_PASSWORD=123123123
+      - xpack.security.http.ssl.enabled=false
+    networks:
+      - accounts-network
+
+  kibana:
+    image: kibana:8.12.1
+    container_name: kibana
+    profiles: ['EnabledLogging']
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=123123123
+      - TELEMETRY_ENABLED=false
+    networks:
+      - accounts-network
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.60
+    container_name: jaeger
+    profiles: ['EnabledLogging']
+    command: --collector.otlp.enabled=true
+    ports:
+      - 6831:6831/udp
+      - 6832:6832/udp 
+      - 5778:5778  
+      - 16686:16686    
+      - 4317:4317   
+      - 4318:4318    
+      - 14268:14268   
+      - 14250:14250   
+      - 14269:14269   
+      - 9411:9411     
+    healthcheck:
+      test: ["CMD", "curl", "-X", "GET", "localhost:14269"] 
+      interval: 1s
+      timeout: 3s
+      retries: 60
+    networks:
+      - accounts-network
 
 networks:
-  accounts-deb: {}
-  ic-backend-deb:
+  accounts-network: {}
+  realworld-external:
+    name: realworld-external
     external: true
