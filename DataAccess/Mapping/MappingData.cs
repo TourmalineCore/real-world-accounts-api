@@ -20,6 +20,7 @@ internal static class MappingData
         new Permission(Permissions.ManageRoles),
         new Permission(Permissions.CanManageTenants),
         new Permission(Permissions.IsTenantsHardDeleteAllowed),
+        new Permission(Permissions.GuestActionsAllowed),
     };
     public static readonly List<Permission> NoPermissions = new()
     {
